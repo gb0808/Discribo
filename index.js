@@ -5,7 +5,8 @@ fileUpload.addEventListener("change", (event) => {
 
     let reader = new FileReader();
     reader.onload = () => {
-        console.log(getNotes(reader.result));
+        const music = new MusicReader(reader.result);
+        console.log(music.getNotes());
     };
 
     reader.readAsText(file);
