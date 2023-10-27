@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parse MusicXML</title>
+    <script src="include/MIDIMessage.js"></script>
+    <script src="include/AudioStream.js"></script>
+    <script src="include/NoteVisualiser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.0.3/build/cjs/vexflow.js"></script>
+    <script src="src/Part.js"></script>
+    <script src="src/MusicReader.js"></script>
 </head>
 <body>
     <label for="music-file">Please upload a .musicxml, .mxl, or a .mid</label>
     <br>
     <input type="file" id="music-file" name="music-file" accept=".musicxml, .mxl, .mid"/>
-    <script src="Part.js"></script>
-    <script src="MusicReader.js"></script>
+    <div id="output"></div>
+    <script src="include/vex.js"></script>
     <script src="index.js"></script>
 </body>
 </html>
