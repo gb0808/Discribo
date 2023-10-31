@@ -10,8 +10,8 @@ class Part {
      */
     constructor(src) {
         this.src = src;
-        this.notes = [];
-        this.#scanForNotes();
+        this.measures = [];
+        this.#getMeasureData();
     }
 
     /**
@@ -26,15 +26,16 @@ class Part {
     popNote() { return this.notes.shift(); }
 
     /**
-     * @description - Parses through a MusicXML file and finds all the notes.
+     * @description - Parses through a MusicXML file and collects data on all the measures.
      * @private
      */
-    #scanForNotes() {
-        const pitchs = this.src.getElementsByTagName("pitch");
-        for (let i = 0; i < pitchs.length; ++i) {
-            const note = pitchs[i].getElementsByTagName("step")[0].childNodes[0].nodeValue 
-                + "/" + pitchs[i].getElementsByTagName("octave")[0].childNodes[0].nodeValue;
-            this.notes.push(note);
+    #getMeasureData() {
+        const xmlMeasures = this.src.getElementsByTagName("measure");
+        for (let i = 0; i < xmlMeasures.length; ++i) {
+            let measure = [];
+            const notes = xmlMeasures[i].getElementsByTagName("note");
+            for (let j = 0; j < notes.length; ++j) measure.push(new Note(notes[j]));
+            this.measures.push(measure);
         }
     }
 
