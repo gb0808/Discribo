@@ -5,8 +5,11 @@ fileUpload.addEventListener("change", (event) => {
 
     const reader = new FileReader();
     reader.onload = () => {
-        console.log(reader.result);
-        const music = new MusicReader(reader.result);
+        const read = new MusicReader(reader.result);
+        const write = new MusicWriter(read);
+        const xmlLink = document.getElementById("xml-link");
+        xmlLink.href = URL.createObjectURL(write.getFile(), { type: "text/xml" });
+        xmlLink.click();
     };
 
     reader.readAsText(file);

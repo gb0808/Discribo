@@ -7,12 +7,14 @@
     <script src="src/Part.js"></script>
     <script src="src/MusicReader.js"></script>
     <script src="src/Note.js"></script>
+    <script src="src/MusicWriter.js"></script>
 </head>
 <body>
     <label for="music-file">Please upload a .musicxml, .mxl, or a .mid</label>
     <br>
     <input type="file" id="music-file" name="music-file" accept=".musicxml, .mxl, .mid"/>
     <div id="output"></div>
+    <a id="xml-link" download="netsblox.xml" style="display: none;"></a>
     <script src="index.js"></script>
 </body>
 </html>

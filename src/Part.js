@@ -1,6 +1,7 @@
 /**
  * @description - An object that models a <part> tag in a MusicXML file.
  * @class
+ * @requires Note.js
  */
 class Part {
 

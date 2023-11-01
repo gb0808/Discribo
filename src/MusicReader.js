@@ -1,7 +1,7 @@
 /**
  * @description - An object that is able to parse MusicXML files.
  * @class
- * @requires - Part.js
+ * @requires Part.js
  */
 class MusicReader {
 
@@ -9,9 +9,11 @@ class MusicReader {
      * @description - Creates a MusicReader object that parses MusicXML files.
      * @constructor
      * @param {String} src - The contents of a .musicxml file.
+     * @param {String} name - The name of the MusicReader.
      */
-    constructor(src) {
+    constructor(src, name = "untitled") {
         this.src = src;
+        this.name = name;
         this.parts = [];
         this.#scanForParts();
     }  
