@@ -8,7 +8,10 @@ fileUpload.addEventListener("change", (event) => {
         const read = new MusicReader(reader.result);
         const write = new MusicWriter(read);
         const xmlLink = document.getElementById("xml-link");
-        xmlLink.href = URL.createObjectURL(write.getFile(), { type: "text/xml" });
+        xmlLink.href = URL.createObjectURL(
+            new Blob([write.getFile()], { type: "text/xml" }), 
+            { type: "text/xml" }
+        );
         xmlLink.click();
     };
 
