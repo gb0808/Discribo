@@ -70,7 +70,7 @@ class TreeNodeFactory {
         const size = arraybuffer.byteLength;
         const vTimeLength = parseVariableLengthValue(new Uint8Array(arraybuffer));
         const vTime = new LeafNode(arraybuffer.slice(0, vTimeLength));
-        const eventBuffer = arraybuffer.slice(vTimeLength, size)
+        const eventBuffer = arraybuffer.slice(vTimeLength, size);
         let event;
         if (isMetaEvent(eventBuffer))
             event = TreeNodeFactory.MetaEventNodeFactory(eventBuffer);
@@ -90,7 +90,9 @@ class TreeNodeFactory {
         const size = arraybuffer.byteLength;
         const lead = new LeafNode(arraybuffer.slice(0, 1));
         const meta_type = new LeafNode(arraybuffer.slice(1, 2));
-        const deltaLength = parseVariableLengthValue(arraybuffer.slice(2, size));
+        const deltaLength = parseVariableLengthValue(
+            new Uint8Array(arraybuffer.slice(2, size))
+        );
         const length = new LeafNode(arraybuffer.slice(2, 2 + deltaLength));
         const data_bytes = new LeafNode(arraybuffer.slice(2 + deltaLength, size));
         return new MetaEventNode(lead, meta_type, length, data_bytes);
@@ -104,7 +106,9 @@ class TreeNodeFactory {
     static SysexEventNodeFactory(arraybuffer) {
         const size = arraybuffer.byteLength;
         const lead = new LeafNode(arraybuffer.slice(0, 1));
-        const deltaLength = parseVariableLengthValue(arraybuffer.slice(1, size));
+        const deltaLength = parseVariableLengthValue(
+            new Uint8Array(arraybuffer.slice(1, size))
+        );
         const length = new LeafNode(arraybuffer.slice(1, 1 + deltaLength));
         const data_bytes = new LeafNode(arraybuffer.slice(1 + deltaLength, size));
         return new SysexEventNode(lead, length, data_bytes);
@@ -195,7 +199,7 @@ function parseVariableLengthValue(bytes) {
     let count = 0;
     for (let i = 0; i < bytes.length; i++) {
         count++;
-        if (!hasLeadingOne(bytes))
+        if (!hasLeadingOne(bytes[i]))
             break;
     }
     return count > 4 ? 4 : count;
@@ -234,7 +238,7 @@ function getMetaEventLength(arraybuffer) {
  * @returns {Boolean}
  */
 function isSysexEvent(arraybuffer) {
-    const tmp = new Int8Array(arraybuffer);
+    const tmp = new Uint8Array(arraybuffer);
     const val = (tmp[0] * 16) + tmp[1];
     return val == 0xF0 || val == 0xF7;
 }
@@ -246,7 +250,7 @@ function isSysexEvent(arraybuffer) {
  * @returns {Number}
  */
 function getSysexEventLength(arraybuffer) {
-    const view = new Int8Array(arraybuffer.slice(1, arraybuffer.byteLength));
+    const view = new Uint8Array(arraybuffer.slice(1, arraybuffer.byteLength));
     let bytes = []
     for (let i = 0; i < view.length; i++) {
         bytes.push(view[i]);
@@ -262,7 +266,7 @@ function getSysexEventLength(arraybuffer) {
  * @returns {[ArrayBuffer]} - an array where each element is an array buffer for a track chunk.
  */
 function getTrackChunks(arraybuffer) {
-    const view = new Int8Array(arraybuffer);
+    const view = new Uint8Array(arraybuffer);
     const size = arraybuffer.byteLength;
     let trackChunks = [];
     let i = 0, j = 0;
@@ -293,19 +297,18 @@ function getTrackEvents(arraybuffer) {
         const slice = arraybuffer.slice(i, size);
         let eventBuffer;
         if (isMetaEvent(slice)) {
-            const length = getMetaEventLength(slice);
-            eventBuffer = slice.slice(0, length + 3)
-            i += (length + 3);
+            const datalength = getMetaEventLength(slice);
+            const variableLength = parseVariableLengthValue(
+                new Uint8Array(slice.slice(2, slice.length))
+            );
+            eventBuffer = slice.slice(0, 2 + variableLength + datalength);
+            i += (2 + variableLength + datalength);
         }  else if (isSysexEvent(slice)) {
-            const length = getSysexEventLength(slice);
-            eventBuffer = slice.slice(0, length + 1)
-            i += (length + 1);
+            // TODO
+            throw (new Error('sysex event not recognized'));
         } else {
-            const view = new Uint8Array(slice);
-            const deltaBytes = parseVariableLengthValue(view);
-            const totalLength = deltaBytes + 3;
-            eventBuffer = slice.slice(0, totalLength)
-            i += totalLength;
+            eventBuffer = slice.slice(0, 3)
+            i += 3;
         }
 
         const tmp = new Uint8Array(deltaTimeBuffer.byteLength + eventBuffer.byteLength);
