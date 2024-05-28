@@ -190,6 +190,28 @@ function bytesToInt(bytes) {
 }
 
 /**
+ * @description - Converts a series of variable length bytes into an integer.
+ * @param {[Number]} bytes 
+ * @returns {Number}
+ */
+function variableLengthBytesToInt(bytes) {
+    let str = '';
+    const length = parseVariableLengthValue(bytes);
+    for (let i = 0; i < length; i++) {
+        const s = bytes[i].toString(2);
+        if (s.length < 8)
+            str += s;
+        else
+            str += s.substring(1, 8);
+    }
+
+    let n = 0;
+    for (let i = str.length - 1, j = 0; i >= 0; i--, j++)
+        n += (parseInt(str[i]) * (2 ** j));
+    return n;
+}
+
+/**
  * @description - Takes a series of variable-length bytes and tells you the length (in bytes) of 
  *                the first value
  * @param {[Number]} bytes 
@@ -229,7 +251,7 @@ function getMetaEventLength(arraybuffer) {
         if (!hasLeadingOne(view[i])) 
             break;
     }
-    return bytesToInt(bytes);
+    return variableLengthBytesToInt(bytes);
 }
 
 /**
@@ -257,7 +279,7 @@ function getSysexEventLength(arraybuffer) {
         if (!hasLeadingOne(view[i])) 
             break;
     }
-    return bytesToInt(bytes);
+    return variableLengthBytesToInt(bytes);
 }
 
 /**
