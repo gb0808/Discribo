@@ -5,7 +5,8 @@ fileUpload.addEventListener("change", (event) => {
 
     const reader = new FileReader();
     reader.onload = () => {
-        console.log(reader.result);
+        const midi = new MidiReader(reader.result);
+        midi.getNotes()
     };
 
     reader.readAsArrayBuffer(file);
